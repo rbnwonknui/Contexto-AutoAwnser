@@ -1,12 +1,42 @@
 (async function() {
     const gameSpan = document.evaluate("/html/body/div/div/main/div[3]/span[2]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     if (!gameSpan) return;
-
-    const gameNumber = gameSpan.textContent.trim().replace('#', '');
+    
+    const gameText = gameSpan.textContent.trim();
+    let gameNumber;
+    let isRandomGame = false;
+    
+    if (gameText.toLowerCase().includes('aleatorio') || gameText.toLowerCase().includes('aleatório')) {
+        isRandomGame = true;
+        
+        try {
+            const stateData = localStorage.getItem('state');
+            if (stateData) {
+                const state = JSON.parse(stateData);
+                gameNumber = state.openGameId;
+                console.log('Jogo aleatório detectado. OpenGameId:', gameNumber);
+            } else {
+                console.error('Estado não encontrado no localStorage');
+                return;
+            }
+        } catch (error) {
+            console.error('Erro ao acessar localStorage:', error);
+            return;
+        }
+    } else {
+        gameNumber = gameText.replace('#', '');
+    }
+    
+    if (!gameNumber) {
+        console.error('Número do jogo não encontrado');
+        return;
+    }
+    
+    console.log('Fazendo request para o jogo:', gameNumber, isRandomGame ? '(aleatório)' : '(normal)');
     
     const response = await fetch(`https://api.contexto.me/machado/pt-br/giveup/${gameNumber}`);
     const data = await response.json();
-
+    
     const targetDiv = document.evaluate("/html/body/div/div/main/div[4]", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
     if (targetDiv) {
         targetDiv.innerHTML = `
@@ -24,9 +54,9 @@
             </div>
         `;
     }
-
+    
     const notification = document.createElement('div');
-    notification.textContent = `Palavra: ${data.word}`;
+    notification.textContent = `Palavra: ${data.word}${isRandomGame ? ' (Jogo Aleatório)' : ''}`;
     notification.style.position = 'fixed';
     notification.style.top = '20px';
     notification.style.left = '50%';
@@ -42,13 +72,13 @@
     notification.style.textAlign = 'center';
     notification.style.opacity = '0';
     notification.style.transition = 'opacity 0.5s';
-
+    
     document.body.appendChild(notification);
-
+    
     requestAnimationFrame(() => {
         notification.style.opacity = '1';
     });
-
+    
     setTimeout(() => {
         notification.style.opacity = '0';
         setTimeout(() => notification.remove(), 500);
