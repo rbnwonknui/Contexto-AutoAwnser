@@ -6,11 +6,9 @@
     let gameNumber;
     let isRandomGame = false;
     
-    // Verifica se é um jogo aleatório
     if (gameText.toLowerCase().includes('aleatorio') || gameText.toLowerCase().includes('aleatório')) {
         isRandomGame = true;
         
-        // Busca o openGameId no localStorage
         try {
             const stateData = localStorage.getItem('state');
             if (stateData) {
@@ -26,7 +24,6 @@
             return;
         }
     } else {
-        // Jogo normal, extrai o número do span
         gameNumber = gameText.replace('#', '');
     }
     
@@ -87,3 +84,4 @@
         setTimeout(() => notification.remove(), 500);
     }, 10000);
 })();
+
