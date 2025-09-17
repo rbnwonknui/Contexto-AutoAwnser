@@ -6,7 +6,7 @@
     let gameNumber;
     let isRandomGame = false;
     
-    if (gameText.toLowerCase().includes('aleatorio') || gameText.toLowerCase().includes('aleatório')) {
+    if (gameText.toLowerCase().includes('random') || gameText.toLowerCase().includes('aleatório')) {
         isRandomGame = true;
         
         try {
@@ -84,3 +84,4 @@
         setTimeout(() => notification.remove(), 500);
     }, 10000);
 })();
+
