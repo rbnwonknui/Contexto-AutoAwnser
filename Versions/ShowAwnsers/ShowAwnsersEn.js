@@ -84,3 +84,4 @@
         setTimeout(() => notification.remove(), 500);
     }, 10000);
 })();
+
